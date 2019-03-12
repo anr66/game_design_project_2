@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,19 +8,29 @@ public class CSWave : MonoBehaviour
 
     public static int score_counter = 0;
     public GameObject robot;
+    float time;
+
+    // Amplitude
+    static float A = 1;
+
+    // Wavelength
+    static float w = 1;
+
+    // Velocity/Speed
+    static float V = 1;
 
     // Use this for initialization
     void Start()
     {
         score_counter = 0;
-
     }
 
     // Update is called once per frame
-    void Update()
-    {
-
-    }
+    //void Update()
+   // {
+     //   //time += Time.deltaTime;
+     //   time = DateTime.Now.Millisecond;
+    //}
 
     /*
 
@@ -38,6 +49,11 @@ public class CSWave : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+
+        float current_time = time;
+
+        var milliseconds = DateTime.Now.Millisecond;
+
         // increment the score
         score_counter++;
 
@@ -48,21 +64,38 @@ public class CSWave : MonoBehaviour
         Mesh mesh = this.GetComponent<MeshFilter>().mesh;
         Vector3[] verts = mesh.vertices;
 
+        Vector3 plane_position = this.transform.position;
+        Vector3 plane_vel = this.GetComponent<Rigidbody>().velocity;
+
         Debug.Log(contact.x);
         Debug.Log(contact.y);
         Debug.Log(contact.z);
 
-        float t = 1;
+        float t = milliseconds - time;
         float r = Mathf.Sqrt((contact.x) * (contact.x) + (contact.z) * (contact.z));
         float e = 2.71f;
-        float A = 1f;
         float a = 1.5f;
-        float f = (-1 * r) * a * t;
+        float f = (-1 * r) - (a * t);
         float V = 1.5f;
-        float w = 1;
+        float w = 1f;
 
 
-        verts[0].y = A * Mathf.Pow(e, f) * Mathf.Cos(2 * Mathf.PI * (r - V * t) / w);
+        for (var v = 0; v < verts.Length; v++)
+        {
+            
+            verts[v].y = (Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w));
+            //verts[v].y = Mathf.Sin(Time.deltaTime);
+            
+
+            mesh.vertices = verts;
+
+           
+            
+   
+            //plane_vel.y = Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w);
+           
+        }
+
 
         mesh.vertices = verts;
         mesh.RecalculateBounds();
@@ -73,15 +106,47 @@ public class CSWave : MonoBehaviour
 
 
         /*
-        Mesh mesh = this.GetComponent<MeshFilter>().mesh;
-        Vector3[] verts = mesh.vertices;
+        //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
+        //Vector3[] verts = mesh.vertices;
         for (var v = 0; v < verts.Length; v++)
         {
-            verts[v].y = Random.Range(0, 50);
+            verts[v].y = UnityEngine.Random.Range(0, 50);
         }
         mesh.vertices = verts;
         mesh.RecalculateBounds();
         mesh.RecalculateNormals();
         */
+        
+        
+    }
+
+    public static void IncreaseAmplitude()
+    {
+        A += 1;
+    }
+
+    public static void DecreaseAmplitude()
+    {
+        A -= 1;
+    }
+
+    public static void IncreaseWavelength()
+    {
+        w += 1;
+    }
+
+    public static void DecreaseWavelength()
+    {
+        w -= 1;
+    }
+
+    public static void IncreaseSpeed()
+    {
+        V += 1;
+    }
+
+    public static void DecreaseSpeed()
+    {
+        V -= 1;
     }
 }
