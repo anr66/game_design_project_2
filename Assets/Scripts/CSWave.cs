@@ -8,10 +8,18 @@ public class CSWave : MonoBehaviour
 
     public static int score_counter = 0;
     public GameObject robot;
+    public GameObject water;
+
     float time;
 
+    public static float impact_time = 0;
+    public static float current_time = 0;
+
+    public static Vector3 contact;
+    public static Vector3 local_vector;
+
     // Amplitude
-    static float A = 1;
+    static float Amplitude = 100;
 
     // Wavelength
     static float w = 1;
@@ -27,11 +35,47 @@ public class CSWave : MonoBehaviour
 
     // Update is called once per frame
     //void Update()
-   // {
-     //   //time += Time.deltaTime;
-     //   time = DateTime.Now.Millisecond;
+    // {
+    //   //time += Time.deltaTime;
+    //   time = DateTime.Now.Millisecond;
     //}
 
+
+    private void Update()
+    {
+        //current_time += Time.deltaTime;
+
+        float t = current_time - impact_time;
+        //float r = Mathf.Sqrt((contact.x) * (contact.x) + (contact.z) * (contact.z));
+        float e = 2.71f;
+        float a = 1.5f;
+
+        float V = 1.5f;
+        float w = 1f;
+
+
+        Mesh mesh = this.GetComponent<MeshFilter>().mesh;
+        Vector3[] verts = mesh.vertices;
+
+        for (var v = 0; v < verts.Length; v++)
+        {
+            current_time = Time.time - impact_time;
+            float r = Mathf.Sqrt(Mathf.Pow(verts[v].x - local_vector.x, 2) + Mathf.Pow(verts[v].z - local_vector.z, 2));
+            //float f = (-1 * r) - (a * t);
+            verts[v].y = Amplitude * Mathf.Exp(-r - (a * current_time)) * Mathf.Cos((2 * Mathf.PI) * (r - (V * current_time))/w);
+            //verts[v].y = Mathf.Sin(Time.deltaTime);
+
+            //verts[v].y = UnityEngine.Random.Range(0, 50);
+
+            mesh.vertices = verts;
+            //plane_vel.y = Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w);
+        }
+
+
+        mesh.vertices = verts;
+        mesh.RecalculateBounds();
+        mesh.RecalculateNormals();
+    }
     /*
 
     y(r, t) = A e-r-at cos(2π (r-Vt) /λ);
@@ -47,64 +91,40 @@ public class CSWave : MonoBehaviour
 
 
 
-    private void OnTriggerEnter(Collider other)
+    void OnCollisionEnter(Collision collider)
     {
-
-        float current_time = time;
-
-        var milliseconds = DateTime.Now.Millisecond;
-
-        // increment the score
-        score_counter++;
-
-
-        // get the point of impact
-        Vector3 contact = robot.transform.position;
-
-        Mesh mesh = this.GetComponent<MeshFilter>().mesh;
-        Vector3[] verts = mesh.vertices;
-
-        Vector3 plane_position = this.transform.position;
-        Vector3 plane_vel = this.GetComponent<Rigidbody>().velocity;
-
-        Debug.Log(contact.x);
-        Debug.Log(contact.y);
-        Debug.Log(contact.z);
-
-        float t = milliseconds - time;
-        float r = Mathf.Sqrt((contact.x) * (contact.x) + (contact.z) * (contact.z));
-        float e = 2.71f;
-        float a = 1.5f;
-        float f = (-1 * r) - (a * t);
-        float V = 1.5f;
-        float w = 1f;
-
-
-        for (var v = 0; v < verts.Length; v++)
+        if (collider.gameObject.tag == "Player")
         {
-            
-            verts[v].y = (Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w));
-            //verts[v].y = Mathf.Sin(Time.deltaTime);
-            
+            Physics.IgnoreCollision(robot.GetComponent<Collider>(), gameObject.GetComponent<Collider>(), true);
 
-            mesh.vertices = verts;
+            impact_time = Time.time;
 
-           
+            //var milliseconds = DateTime.Now.Millisecond;
+
+            // increment the score
+            score_counter++;
+
+
+            // get the point of impact
+            contact = robot.transform.position;
+
+            ContactPoint p = collider.contacts[0];
+            local_vector = transform.InverseTransformPoint(p.point);
+
+            //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
+            //Vector3[] verts = mesh.vertices;
+
+            //Vector3 plane_position = this.transform.position;
+            //Vector3 plane_vel = this.GetComponent<Rigidbody>().velocity;
+
+            Debug.Log(contact.x);
+            Debug.Log(contact.y);
+            Debug.Log(contact.z);
+
+            Debug.Log(local_vector.x);
+
             
-   
-            //plane_vel.y = Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w);
-           
         }
-
-
-        mesh.vertices = verts;
-        mesh.RecalculateBounds();
-        mesh.RecalculateNormals();
-
-
-
-
-
         /*
         //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
         //Vector3[] verts = mesh.vertices;
@@ -120,14 +140,19 @@ public class CSWave : MonoBehaviour
         
     }
 
+    public static void ResetCollision()
+    {
+        //Physics.IgnoreCollision(robot.GetComponent<Collider>(), gameObject.GetComponent<Collider>(), false);
+    }
+
     public static void IncreaseAmplitude()
     {
-        A += 1;
+        Amplitude += 1;
     }
 
     public static void DecreaseAmplitude()
     {
-        A -= 1;
+        Amplitude -= 1;
     }
 
     public static void IncreaseWavelength()
