@@ -23,20 +23,35 @@ public class Controller : MonoBehaviour
 
         }
 
-        // cause diver to jump into water
+        // reset diver
         if (Input.GetKeyDown(KeyCode.R))
         {
-            Debug.Log("R key pressed");
+            //Debug.Log("R key pressed");
             var position = robot.transform.position;
-            position.x = -1.70f;
-            position.y = 4f;
-            position.z = -10f;
+            position.x = -2.6f;
+            position.y = 9.65f;
+            position.z = -5.1f;
 
             var velocity = robot.GetComponent<Rigidbody>().velocity;
             velocity.y = 0;
             robot.GetComponent<Rigidbody>().velocity = velocity;
             robot.transform.position = position;
             
+        }
+
+        // robot jump
+        if (Input.GetKeyDown(KeyCode.J))
+        {
+            var position = robot.transform.position;
+            position.x = -2.6f;
+            position.y = 11.15f;
+            position.z = -7.5f;
+
+            var velocity = robot.GetComponent<Rigidbody>().velocity;
+            velocity.y = 0;
+            robot.GetComponent<Rigidbody>().velocity = velocity;
+            robot.transform.position = position;
+
         }
 
         // increase amplitude of the wave
@@ -46,31 +61,31 @@ public class Controller : MonoBehaviour
         }
 
         // decrease amplitude of the wave
-        if (Input.GetKeyDown("a"))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             CSWave.DecreaseAmplitude();
         }
 
         // increase wavelength
-        if (Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.D))
         {
             CSWave.IncreaseWavelength();
         }
 
         // decrease wavelength
-        if (Input.GetKeyDown("l"))
+        if (Input.GetKeyDown(KeyCode.C))
         {
             CSWave.DecreaseWavelength();
         }
 
         // increase speed
-        if (Input.GetKeyDown(KeyCode.V))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             CSWave.IncreaseSpeed();
         }
 
-        // increase speed
-        if (Input.GetKeyDown("v"))
+        // decrease speed
+        if (Input.GetKeyDown(KeyCode.X))
         {
             CSWave.DecreaseSpeed();
         }

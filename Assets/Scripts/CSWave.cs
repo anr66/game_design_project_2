@@ -19,10 +19,10 @@ public class CSWave : MonoBehaviour
     public static Vector3 local_vector;
 
     // Amplitude
-    static float Amplitude = 100;
+    static float Amplitude = 2;
 
     // Wavelength
-    static float w = 1;
+    static float w = 0.5f;
 
     // Velocity/Speed
     static float V = 1;
@@ -49,10 +49,7 @@ public class CSWave : MonoBehaviour
         //float r = Mathf.Sqrt((contact.x) * (contact.x) + (contact.z) * (contact.z));
         float e = 2.71f;
         float a = 1.5f;
-
-        float V = 1.5f;
-        float w = 1f;
-
+ 
 
         Mesh mesh = this.GetComponent<MeshFilter>().mesh;
         Vector3[] verts = mesh.vertices;
@@ -61,14 +58,12 @@ public class CSWave : MonoBehaviour
         {
             current_time = Time.time - impact_time;
             float r = Mathf.Sqrt(Mathf.Pow(verts[v].x - local_vector.x, 2) + Mathf.Pow(verts[v].z - local_vector.z, 2));
-            //float f = (-1 * r) - (a * t);
             verts[v].y = Amplitude * Mathf.Exp(-r - (a * current_time)) * Mathf.Cos((2 * Mathf.PI) * (r - (V * current_time))/w);
             //verts[v].y = Mathf.Sin(Time.deltaTime);
 
             //verts[v].y = UnityEngine.Random.Range(0, 50);
 
             mesh.vertices = verts;
-            //plane_vel.y = Mathf.Pow(e * A, f) * Mathf.Cos((2 * Mathf.PI) * (r - V * t) / w);
         }
 
 
@@ -91,40 +86,41 @@ public class CSWave : MonoBehaviour
 
 
 
-    void OnCollisionEnter(Collision collider)
+    void OnTriggerEnter(Collider other)
     {
-        if (collider.gameObject.tag == "Player")
-        {
-            Physics.IgnoreCollision(robot.GetComponent<Collider>(), gameObject.GetComponent<Collider>(), true);
+        //if (collider.gameObject.tag == "Player")
+       // {
+        //Physics.IgnoreCollision(robot.GetComponent<Collider>(), gameObject.GetComponent<Collider>(), true);
 
-            impact_time = Time.time;
+        impact_time = Time.time;
 
-            //var milliseconds = DateTime.Now.Millisecond;
+        //var milliseconds = DateTime.Now.Millisecond;
 
-            // increment the score
-            score_counter++;
+        // increment the score
+        score_counter++;
 
 
-            // get the point of impact
-            contact = robot.transform.position;
+        // get the point of impact
+        contact = robot.transform.position;
+        local_vector = transform.InverseTransformPoint(contact);
 
-            ContactPoint p = collider.contacts[0];
-            local_vector = transform.InverseTransformPoint(p.point);
+        //ContactPoint p = collider.contacts[0];
+        //local_vector = transform.InverseTransformPoint(p.point);
 
-            //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
-            //Vector3[] verts = mesh.vertices;
+        //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
+        //Vector3[] verts = mesh.vertices;
 
-            //Vector3 plane_position = this.transform.position;
-            //Vector3 plane_vel = this.GetComponent<Rigidbody>().velocity;
+        //Vector3 plane_position = this.transform.position;
+        //Vector3 plane_vel = this.GetComponent<Rigidbody>().velocity;
 
-            Debug.Log(contact.x);
-            Debug.Log(contact.y);
-            Debug.Log(contact.z);
+        Debug.Log(contact.x);
+        Debug.Log(contact.y);
+        Debug.Log(contact.z);
 
-            Debug.Log(local_vector.x);
+        Debug.Log(local_vector.x);
 
             
-        }
+       // }
         /*
         //Mesh mesh = this.GetComponent<MeshFilter>().mesh;
         //Vector3[] verts = mesh.vertices;
